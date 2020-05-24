@@ -1,5 +1,5 @@
 from fastapi import FastAPI
-from fastapi.responses import HTMLResponse, RedirectResponse
+from fastapi.responses import HTMLResponse, FileResponse
 from fastapi.staticfiles import StaticFiles
 from starlette.middleware.cors import CORSMiddleware
 import logging
@@ -9,17 +9,6 @@ from app.core import config
 app = FastAPI(
   title=config.NAME
 )
-
-class SPAStaticFiles(StaticFiles):
-    async def get_response(self, path, scope):
-        response = await super().get_response(path, scope)
-        if response.status_code == 404:
-            response = await super().get_response('.', scope)
-        return response
-
-app.mount("/web/app/", StaticFiles(directory="%s/static" % __name__, html=True))
-
-_logger = logging.getLogger('app')
 
 if config.CORS_ORIGIN:
   app.add_middleware(
@@ -31,9 +20,18 @@ if config.CORS_ORIGIN:
   )
 
 async def redirectSPA():
-  response = RedirectResponse(url='/web/app/')
-  return response
+  return FileResponse('%s/static/index.html' % __name__)
 
-@app.get("/")
-async def root():
-    return await redirectSPA()
+@app.middleware("http")
+async def add_custom_header(request, call_next):
+    response = await call_next(request)
+    if response.status_code == 404:
+        return FileResponse('%s/static/index.html' % __name__)
+    return response
+
+@app.exception_handler(404)
+def not_found(request, exc):
+    return FileResponse('%s/static/index.html' % __name__)
+
+app.mount('/_assets/', StaticFiles(directory='%s/static/_assets' % __name__))
+app.route('/', redirectSPA)

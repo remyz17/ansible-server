@@ -1,0 +1,3 @@
+[submodule "ansible-web"]
+	path = ansible-web
+	url = git@github.com:remyz17/ansible-web.git
