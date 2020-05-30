@@ -20,18 +20,18 @@ if config.CORS_ORIGIN:
   )
 
 async def redirectSPA():
-  return FileResponse('%s/static/index.html' % __name__)
+  return FileResponse('app/static/index.html')
 
 @app.middleware("http")
 async def add_custom_header(request, call_next):
     response = await call_next(request)
     if response.status_code == 404:
-        return FileResponse('%s/static/index.html' % __name__)
+        return await redirectSPA
     return response
 
 @app.exception_handler(404)
-def not_found(request, exc):
-    return FileResponse('%s/static/index.html' % __name__)
+async def not_found(request, exc):
+    return await redirectSPA()
 
-app.mount('/_assets/', StaticFiles(directory='%s/static/_assets' % __name__))
+app.mount('/_assets/', StaticFiles(directory='app/static/_assets'))
 app.route('/', redirectSPA)
