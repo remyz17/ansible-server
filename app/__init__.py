@@ -5,6 +5,10 @@ from starlette.middleware.cors import CORSMiddleware
 import logging
 
 from app.core import config
+from app.api.env import Env
+from app.api.routes import api_router
+
+_env = Env(False)
 
 app = FastAPI(
   title=config.NAME
@@ -35,3 +39,4 @@ async def not_found(request, exc):
 
 app.mount('/_assets/', StaticFiles(directory='app/static/_assets'))
 app.route('/', redirectSPA)
+app.include_router(api_router, prefix='/api')

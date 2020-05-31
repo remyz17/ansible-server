@@ -61,3 +61,5 @@ LICENSE.md
 pyvenv.cfg
 
 app/static/
+
+ansible-dev/
