@@ -8,7 +8,7 @@ from app.core import config
 from app.api.env import Env
 from app.api.routes import api_router
 
-_env = Env(False)
+_env = Env(production=False)
 
 app = FastAPI(
   title=config.NAME

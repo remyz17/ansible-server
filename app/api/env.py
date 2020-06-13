@@ -13,6 +13,6 @@ class Env(object):
   
   def _init_db(self):
     if self.is_prod:
-      MongoConnection(config.DB_URI, 'prod')
+      MongoConnection(config.DB_URI, config.DB_PORT, 'prod')
     else:
-      MongoConnection(config.DB_URI, 'dev')
+      MongoConnection(config.DB_URI, config.DB_PORT, 'dev')

@@ -1,11 +1,11 @@
 from pydantic import BaseModel
 from typing import List, Optional
 
-class HostBase(BaseModel):
+class GroupBase(BaseModel):
   pass
 
-class HostCreate(HostBase):
+class GroupCreate(GroupBase):
   name: str
 
-class HostUpdate(HostBase):
+class GroupUpdate(GroupBase):
   name: str
