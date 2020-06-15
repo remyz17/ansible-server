@@ -26,12 +26,12 @@ if config.CORS_ORIGIN:
 async def redirectSPA():
   return FileResponse('app/static/index.html')
 
-@app.middleware("http")
+""" @app.middleware("http")
 async def add_custom_header(request, call_next):
     response = await call_next(request)
     if response.status_code == 404:
         return await redirectSPA
-    return response
+    return response """
 
 @app.exception_handler(404)
 async def not_found(request, exc):

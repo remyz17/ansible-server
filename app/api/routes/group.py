@@ -1,39 +1,39 @@
 from fastapi import APIRouter
 import logging
 
-from app.api.interface.group import schemas
-from app.models.host import Host
-from app.models.group import Group
+from app.api.interface.group import schemas, interface
+from app.api.interface.host.interface import HostInterface
 
 _logger = logging.getLogger('app')
 router = APIRouter()
+_group = interface.GroupInterface()
+_host = HostInterface()
 
 @router.get('/get_multi')
 async def get_multi():
-  for group in Group.objects():
-    if group.get_parent_id():
-      _logger.info(group.get_parent_id().name)
-  return {}
+  res = _group.get_multi()
+  _logger.info(res.to_json())
+  return res.to_json()
 
 @router.get('/get/{group_id}')
 async def get(group_id: str):
-  _logger.info('group %s' % group_id)
-  return {}
+  res = _group.get(group_id)
+  _logger.info(res.to_json())
+  return res.to_json()
 
 @router.post('/create')
 async def create(data: schemas.GroupCreate):
-  _logger.info(data)
-  group = Group(name=data.name).save()
-  new_group = Group(name='shsjkshs', parent_id=group).save()
-  _logger.info(new_group)
-  return {}
+  res = _group.create(data)
+  _logger.info(res.to_json())
+  return res.to_json()
 
 @router.put('/update/{group_id}')
 async def update(group_id: str, data: schemas.GroupUpdate):
-  _logger.info(group_id)
-  _logger.info(data)
-  return {}
+  res = _group.update(group_id, data)
+  _logger.info(res.to_json())
+  return res.to_json()
 
 @router.delete('/delete/{group_id}')
 async def delete(group_id: str):
+  res = _group.delete(group_id)
   return {}

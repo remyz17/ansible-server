@@ -10,5 +10,4 @@ class Host(Document):
   group_id = ReferenceField('Group')
 
   def group(self):
-    _logger.info(type(self.group_id.id))
     return Group.objects.get(id=self.group_id.id)
