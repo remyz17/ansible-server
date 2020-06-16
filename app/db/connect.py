@@ -28,3 +28,6 @@ class MongoConnection(object):
   
   def get_database(self):
     return self.db
+  
+  def close_client(self):
+    self.client.close()

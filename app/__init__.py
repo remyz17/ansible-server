@@ -1,11 +1,12 @@
+import logging
+
 from fastapi import FastAPI
 from fastapi.responses import HTMLResponse, FileResponse
 from fastapi.staticfiles import StaticFiles
 from starlette.middleware.cors import CORSMiddleware
-import logging
 
 from app.core import config
-from app.api.env import Env
+from app.db import database
 from app.api.routes import api_router
 
 _logger = logging.getLogger(__name__)
@@ -13,8 +14,6 @@ _logger = logging.getLogger(__name__)
 app = FastAPI(
   title=config.NAME
 )
-
-_env = Env(production=config.PROD)
 
 if config.CORS_ORIGIN:
   app.add_middleware(
@@ -43,9 +42,13 @@ async def not_found(request, exc):
 
 @app.on_event('startup')
 async def event_startup():
-  _logger.info('Initializing env ...')
-  """ _env._init_db() """
+  _logger.info('Connection to database ...')
+  _logger.info('Connected to database')
 
+@app.on_event('shutdown')
+async def event_shutdown():
+  _logger.info('Closing connection to database ...')
+  
 
 app.include_router(api_router, prefix='/api')
 app.mount('/_assets/', StaticFiles(directory='app/static/_assets'))
