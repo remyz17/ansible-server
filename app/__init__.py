@@ -27,7 +27,7 @@ if config.CORS_ORIGIN:
 async def redirectSPA():
   return FileResponse('app/static/index.html')
 
-""" 
+
 @app.middleware("http")
 async def add_custom_header(request, call_next):
     response = await call_next(request)
@@ -38,16 +38,20 @@ async def add_custom_header(request, call_next):
 @app.exception_handler(404)
 async def not_found(request, exc):
     return await redirectSPA()
- """
+
 
 @app.on_event('startup')
 async def event_startup():
-  _logger.info('Connection to database ...')
-  _logger.info('Connected to database')
+  _logger.info('Ensuring model indexes created into database ...')
+  from app.models import ensure_indexes
+  await ensure_indexes()
+  _logger.info('Model indexes created')
 
 @app.on_event('shutdown')
 async def event_shutdown():
   _logger.info('Closing connection to database ...')
+  database.client.close()
+  _logger.info('Connection closed')
   
 
 app.include_router(api_router, prefix='/api')

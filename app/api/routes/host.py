@@ -1,44 +1,40 @@
-from fastapi import APIRouter
-from fastapi.responses import JSONResponse
-from fastapi.encoders import jsonable_encoder
 import logging
-import json
+from fastapi import APIRouter
 
-from app.api.interface.host import schemas, interface
+from app.api.serializers import host_serialize
+from app.models.host import Host
+from app.models.group import Group
 
 _logger = logging.getLogger('app')
 router = APIRouter()
-_host = interface.HostInterface()
 
 @router.get('/get_multi')
 async def get_multi():
-  res = _host.get_multi()
-  a = {
-    'data': json.loads(res.to_json())
-  }
-  _logger.info(a['data'])
-  return JSONResponse(content=jsonable_encoder(a))
+  cursor = Host.find()
+  hosts = [host.dump() for host in await cursor.to_list(length=80)]
+  _logger.info(hosts)
+  return hosts
 
 @router.get('/get/{host_id}')
 async def get(host_id: str):
-  res = _host.get(host_id)
-  _logger.info(res.to_json())
-  return res.to_json()
+  host = await Host.get(host_id)
+  _logger.info(host.dump())
+  return host.dump()
 
 @router.post('/create')
-async def create(data: schemas.HostCreate):
-  res = _host.create(data)
-  _logger.info(res.to_json())
-  return res.to_json()
+async def create(data: host_serialize.HostCreate):
+  host = Host(hostname=data.hostname)
+  await host.commit()
+  return host.dump()
 
 @router.put('/update/{host_id}')
-async def update(host_id: str, data: schemas.HostUpdate):
-  res = _host.update(host_id, data)
-  _logger.info(res.to_json())
-  return res.to_json()
+async def update(host_id: str, data: host_serialize.HostUpdate):
+  host = await Host.get(host_id)
+  host = await host.update(data)
+  _logger.info(host.dump())
+  return host.dump()
 
 @router.delete('/delete/{host_id}')
 async def delete(host_id: str):
-  res = _host.delete(host_id)
-  """ _logger.info(res.to_json()) """
+  host = await Host.get(host_id).remove()
   return {}
