@@ -18,23 +18,31 @@ async def get_multi():
 @router.get('/get/{host_id}')
 async def get(host_id: str):
   host = await Host.get(host_id)
+  group = await Group.get(host.group_id.pk)
+  _logger.info(group.dump())
   _logger.info(host.dump())
   return host.dump()
 
 @router.post('/create')
 async def create(data: host_serialize.HostCreate):
   host = Host(hostname=data.hostname)
+  if hasattr(data, 'group_id'):
+    group = await Group.get(data.group_id)
+    if group:
+      host.group_id = group
   await host.commit()
   return host.dump()
 
 @router.put('/update/{host_id}')
 async def update(host_id: str, data: host_serialize.HostUpdate):
   host = await Host.get(host_id)
-  host = await host.update(data)
+  host.hostname = data.hostname
+  await host.commit()
   _logger.info(host.dump())
   return host.dump()
 
 @router.delete('/delete/{host_id}')
 async def delete(host_id: str):
-  host = await Host.get(host_id).remove()
+  host = await Host.get(host_id)
+  await host.remove()
   return {}
