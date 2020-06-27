@@ -3,7 +3,7 @@ from bson import ObjectId
 from umongo import Document, EmbeddedDocument, fields
 
 from app.db import instance, db
-from app.models.group import Group
+from app.api.models.group import Group
 
 _logger = logging.getLogger(__name__)
 

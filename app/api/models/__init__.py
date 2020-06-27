@@ -1,5 +1,5 @@
-from app.models.host import Host
-from app.models.group import Group
+from app.api.models.host import Host
+from app.api.models.group import Group
 
 async def ensure_indexes():
   await Host.ensure_indexes()

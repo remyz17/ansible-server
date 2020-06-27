@@ -2,8 +2,8 @@ import logging
 from fastapi import APIRouter
 
 from app.api.serializers import group_serialize
-from app.models.host import Host
-from app.models.group import Group, GroupVar
+from app.api.models.host import Host
+from app.api.models.group import Group, GroupVar
 
 _logger = logging.getLogger('app')
 router = APIRouter()
