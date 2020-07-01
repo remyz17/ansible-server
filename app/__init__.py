@@ -1,4 +1,5 @@
 import logging
+import sys
 
 from fastapi import FastAPI
 from fastapi.responses import HTMLResponse, FileResponse
@@ -43,8 +44,12 @@ async def not_found(request, exc):
 @app.on_event('startup')
 async def event_startup():
   _logger.info('Ensuring model indexes created into database ...')
-  from app.models import ensure_indexes
-  await ensure_indexes()
+  from app.api.models import ensure_indexes
+  try:
+    await ensure_indexes()
+  except Exception as err:
+    _logger.critical(err)
+    raise err
   _logger.info('Model indexes created')
 
 @app.on_event('shutdown')

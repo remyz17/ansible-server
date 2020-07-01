@@ -2,7 +2,7 @@ import logging
 from fastapi import APIRouter
 
 from app.api.serializers import host_serialize
-from app.api.models.host import Host
+from app.api.models.host import Host, HostVar
 from app.api.models.group import Group
 
 _logger = logging.getLogger('app')
@@ -30,6 +30,10 @@ async def create(data: host_serialize.HostCreate):
     group = await Group.get(data.group_id)
     if group:
       host.group_id = group
+  if hasattr(data, 'hostvars'):
+    for var in data.hostvars:
+      new_var = HostVar(key=var.key, value=var.value)
+      await group.add_var(new_var)
   await host.commit()
   return host.dump()
 
