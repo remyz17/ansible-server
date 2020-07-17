@@ -1,4 +1,5 @@
 import logging
+from time import sleep
 from fastapi import APIRouter
 
 from app.api.serializers import host_serialize
@@ -18,8 +19,8 @@ async def get_multi():
 @router.get('/get/{host_id}')
 async def get(host_id: str):
   host = await Host.get(host_id)
-  group = await Group.get(host.group_id.pk)
-  _logger.info(group.dump())
+  """ group = await Group.get(host.group_id)
+  _logger.info(group.dump()) """
   _logger.info(host.dump())
   return host.dump()
 
