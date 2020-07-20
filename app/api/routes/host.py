@@ -1,5 +1,4 @@
 import logging
-from time import sleep
 from fastapi import APIRouter
 
 from app.api.serializers import host_serialize
