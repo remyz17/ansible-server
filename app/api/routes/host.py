@@ -25,7 +25,7 @@ async def get(host_id: str):
 
 @router.post('/create')
 async def create(data: host_serialize.HostCreate):
-  host = Host(hostname=data.hostname)
+  host = Host(hostname=data.hostname, hostvars=[])
   if hasattr(data, 'group_id'):
     group = await Group.get(data.group_id)
     if group:
@@ -33,7 +33,7 @@ async def create(data: host_serialize.HostCreate):
   if hasattr(data, 'hostvars'):
     for var in data.hostvars:
       new_var = HostVar(key=var.key, value=var.value)
-      await group.add_var(new_var)
+      await host.add_var(new_var)
   await host.commit()
   return host.dump()
 

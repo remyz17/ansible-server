@@ -16,7 +16,7 @@ class HostVar(EmbeddedDocument):
 class Host(Document):
   hostname = fields.StrField(required=True, unique=True)
   group_id = fields.ReferenceField(Group)
-  _vars = fields.ListField(fields.EmbeddedField(HostVar))
+  hostvars = fields.ListField(fields.EmbeddedField(HostVar))
 
   @classmethod
   async def get(cls, _id: str):
@@ -26,4 +26,4 @@ class Host(Document):
     return await cls.find_one({'_id': ObjectId(_id)})
   
   async def add_var(self, var: HostVar):
-    self._vars = self._vars + [var]
+    self.hostvars = self.hostvars + [var]
