@@ -1,5 +1,6 @@
 import logging
 from fastapi import APIRouter
+from time import sleep
 
 from app.api.serializers import host_serialize
 from app.api.models.host import Host, HostVar
@@ -11,6 +12,7 @@ router = APIRouter()
 @router.get('/get_multi')
 async def get_multi():
   cursor = Host.find()
+  sleep(3)
   hosts = [host.dump() for host in await cursor.to_list(length=80)]
   _logger.info(hosts)
   return hosts
@@ -21,11 +23,12 @@ async def get(host_id: str):
   """ group = await Group.get(host.group_id)
   _logger.info(group.dump()) """
   _logger.info(host.dump())
+  sleep(3)
   return host.dump()
 
 @router.post('/create')
 async def create(data: host_serialize.HostCreate):
-  host = Host(hostname=data.hostname, hostvars=[])
+  host = Host(hostname=data.hostname, hostvars=[{'key': 'ahah', 'value': 'test val'}])
   if hasattr(data, 'group_id'):
     group = await Group.get(data.group_id)
     if group:
