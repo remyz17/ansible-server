@@ -1,4 +1,5 @@
 from fastapi import APIRouter, status
+from starlette.status import HTTP_201_CREATED
 
 from app.core.logger import _logger
 from app.api.serializers import host_serialize
@@ -7,12 +8,12 @@ from app.api.models.group import Group
 
 router = APIRouter()
 
-@router.get('/get_multi')
+@router.get(
+  '/get_multi',
+  status_code=status.HTTP_200_OK
+)
 async def get_multi():
   hosts = await Host.get_multi()
-  """ cursor = Host.find()
-  hosts = [host.dump() for host in await cursor.to_list(length=80)]
-  _logger.info(hosts) """
   return hosts
 
 @router.get(
@@ -24,9 +25,14 @@ async def get(host_id: str):
   host = await Host.get(host_id)
   return host
 
-@router.post('/create')
+@router.post(
+  '/create',
+  status_code=status.HTTP_201_CREATED
+)
 async def create(data: host_serialize.HostCreate):
-  host = Host(hostname=data.hostname, hostvars=[{'key': 'ahah', 'value': 'test val'}])
+  _logger.info(data.json())
+  host = await Host.create(data.dict())
+  """ host = Host(hostname=data.hostname, hostvars=[{'key': 'ahah', 'value': 'test val'}])
   if hasattr(data, 'group_id'):
     group = await Group.get(data.group_id)
     if group:
@@ -36,7 +42,7 @@ async def create(data: host_serialize.HostCreate):
       new_var = HostVar(key=var.key, value=var.value)
       await host.add_var(new_var)
   await host.commit()
-  return host.dump()
+  return host.dump() """
 
 @router.put('/update/{host_id}')
 async def update(host_id: str, data: host_serialize.HostUpdate):

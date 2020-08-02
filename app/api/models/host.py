@@ -40,6 +40,18 @@ class Host(Document):
       hosts.append(host)
     _logger.info(hosts)
     return hosts
+  
+  @classmethod
+  async def create(cls, data):
+    _logger.info(data)
+    _logger.info(len(data.get('hostvars')))
+    host = cls(hostname=data.get('hostname'), hostvars=data.get('hostvars') if len(data.get('hostvars')) > 0 else [])
+    if data.get('group_id'):
+      _logger.info('has group id %s' % data.get('group_id'))
+      group = await Group.get(data['group_id'])
+      host.group_id = group
+    await host.commit()
+    return host
 
   async def add_var(self, var: HostVar):
     self.hostvars = self.hostvars + [var]
