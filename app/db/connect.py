@@ -1,8 +1,6 @@
 from motor.motor_asyncio import AsyncIOMotorClient
-from umongo import Instance
-import logging
 
-_logger = logging.getLogger('app')
+from app.core.logger import _logger
 
 class MongoConnection(object):
 

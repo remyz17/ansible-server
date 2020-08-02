@@ -1,16 +1,12 @@
-import logging
-import sys
-
 from fastapi import FastAPI
 from fastapi.responses import HTMLResponse, FileResponse
 from fastapi.staticfiles import StaticFiles
 from starlette.middleware.cors import CORSMiddleware
 
 from app.core import config
+from app.core.logger import _logger
 from app.db import database
 from app.api.routes import api_router
-
-_logger = logging.getLogger(__name__)
 
 app = FastAPI(
   title=config.NAME

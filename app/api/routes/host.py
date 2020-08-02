@@ -1,30 +1,28 @@
-import logging
-from fastapi import APIRouter
-from time import sleep
+from fastapi import APIRouter, status
 
+from app.core.logger import _logger
 from app.api.serializers import host_serialize
 from app.api.models.host import Host, HostVar
 from app.api.models.group import Group
 
-_logger = logging.getLogger('app')
 router = APIRouter()
 
 @router.get('/get_multi')
 async def get_multi():
-  cursor = Host.find()
-  sleep(3)
+  hosts = await Host.get_multi()
+  """ cursor = Host.find()
   hosts = [host.dump() for host in await cursor.to_list(length=80)]
-  _logger.info(hosts)
+  _logger.info(hosts) """
   return hosts
 
-@router.get('/get/{host_id}')
+@router.get(
+  '/get/{host_id}',
+  # response_model=host_serialize.HostGetResponse,
+  status_code=status.HTTP_200_OK
+)
 async def get(host_id: str):
   host = await Host.get(host_id)
-  """ group = await Group.get(host.group_id)
-  _logger.info(group.dump()) """
-  _logger.info(host.dump())
-  sleep(3)
-  return host.dump()
+  return host
 
 @router.post('/create')
 async def create(data: host_serialize.HostCreate):
