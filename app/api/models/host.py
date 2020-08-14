@@ -44,14 +44,15 @@ class Host(Document):
 
     @classmethod
     async def create(cls, data):
-        host = cls(
-            hostname=data.get('hostname'),
-            hostvars=data.get('hostvars')
-                if len(data.get('hostvars')) > 0
-                else []
-        )
-        if data.get('group_id'):
-            group = await Group.get(data['group_id'])
-            host.group_id = group
+        host = cls(**data)
         await host.commit()
         return host
+
+    @classmethod
+    async def update_data(cls, _id, data):
+        _logger.info(data)
+        host = await cls.collection.update_one(
+            {'_id': ObjectId(_id)},
+            {'$set': data}
+        )
+        _logger.info(host)

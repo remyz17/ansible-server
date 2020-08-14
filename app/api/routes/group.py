@@ -25,17 +25,8 @@ async def get(group_id: str):
 
 @router.post('/create')
 async def create(data: group_serialize.GroupCreate):
-    group = Group(name=data.name, groupvars=[])
-    if hasattr(data, 'parent_id'):
-        parent = await Group.get(data.parent_id)
-        _logger.info(parent)
-        if parent:
-            group.parent_id = parent
-    if hasattr(data, 'groupvars'):
-        for var in data.groupvars:
-            new_var = GroupVar(key=var.key, value=var.value)
-            await group.add_var(new_var)
-    await group.commit()
+    group = await Group.create(data.dict(exclude_unset=True))
+    _logger.info(group.dump())
     return group.dump()
 
 

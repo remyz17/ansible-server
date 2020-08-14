@@ -24,5 +24,8 @@ class Group(Document):
 
         return await cls.find_one({'_id': ObjectId(_id)})
 
-    async def add_var(self, var: GroupVar):
-        self.groupvars = self.groupvars + [var]
+    @classmethod
+    async def create(cls, data):
+        group = cls(**data)
+        await group.commit()
+        return group
