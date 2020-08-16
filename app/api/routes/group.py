@@ -2,44 +2,48 @@ from fastapi import APIRouter
 
 from app.core.logger import _logger
 from app.api.serializers import group_serialize
-from app.api.models.host import Host
-from app.api.models.group import Group, GroupVar
+from app.api.models.group import Group
 
 router = APIRouter()
 
 
-@router.get('/get_multi')
+@router.get("/get_multi")
 async def get_multi():
-    cursor = Group.find()
-    groups = [host.dump() for host in await cursor.to_list(length=80)]
-    _logger.info(groups)
+    groups = await Group.get_multi()
+    for group in groups:
+        parent = None
+        if 'parent_id' in group.keys():
+            parent = await Group.get(group['parent_id'])
+        if parent:
+            group['parent'] = parent.dump()
     return groups
 
 
-@router.get('/get/{group_id}')
+@router.get("/get/{group_id}")
 async def get(group_id: str):
     group = await Group.get(group_id)
-    _logger.info(group.dump())
-    return group.dump()
+    group = group.dump()
+    parent = None
+    if 'parent_id' in group.keys():
+        parent = await Group.get(group['parent_id'])
+    if parent:
+        group['parent'] = parent.dump()
+    return group
 
 
-@router.post('/create')
+@router.post("/create")
 async def create(data: group_serialize.GroupCreate):
     group = await Group.create(data.dict(exclude_unset=True))
-    _logger.info(group.dump())
     return group.dump()
 
 
-@router.put('/update/{group_id}')
+@router.put("/update/{group_id}")
 async def update(group_id: str, data: group_serialize.GroupUpdate):
-    group = await Group.get(group_id)
-    group = await group.update(name=data.name)
-    _logger.info(group.dump())
-    return group.dump()
+    group = await Group.update_data(group_id, data.dict(exclude_unset=True))
+    _logger.info(group)
+    return group
 
 
-@router.delete('/delete/{group_id}')
+@router.delete("/delete/{group_id}")
 async def delete(group_id: str):
-    group = await Group.get(group_id)
-    await group.remove()
-    return {}
+    await Group.delete(group_id)

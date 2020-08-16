@@ -8,7 +8,7 @@ from app.api.models.group import Group
 
 @instance.register
 class HostVar(EmbeddedDocument):
-    key = fields.StrField(unique=True)
+    key = fields.StrField()
     value = fields.StrField()
 
 
@@ -24,10 +24,6 @@ class Host(Document):
             return None
 
         host = await cls.find_one({'_id': ObjectId(_id)})
-        host = host.dump()
-        if 'group_id' in host.keys():
-            group = await Group.get(host['group_id'])
-            host['group'] = group.dump()
         return host
 
     @classmethod
@@ -35,11 +31,7 @@ class Host(Document):
         cursor = cls.find()
         hosts = []
         for host in await cursor.to_list(length=80):
-            host = host.dump()
-            if 'group_id' in host.keys():
-                group = await Group.get(host['group_id'])
-                host['group'] = group.dump()
-            hosts.append(host)
+            hosts.append(host.dump())
         return hosts
 
     @classmethod
@@ -50,9 +42,13 @@ class Host(Document):
 
     @classmethod
     async def update_data(cls, _id, data):
-        _logger.info(data)
         host = await cls.collection.update_one(
             {'_id': ObjectId(_id)},
             {'$set': data}
         )
         _logger.info(host)
+    
+    @classmethod
+    async def delete(cls, _id):
+        host = await cls.get(_id)
+        await host.remove()
