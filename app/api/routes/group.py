@@ -31,6 +31,13 @@ async def get(group_id: str):
     return group
 
 
+@router.get("/search")
+async def search(name: str, limit: int = 5):
+    groups = await Group.search(name, limit)
+    _logger.info(groups)
+    return groups
+
+
 @router.post("/create")
 async def create(data: group_serialize.GroupCreate):
     group = await Group.create(data.dict(exclude_unset=True))

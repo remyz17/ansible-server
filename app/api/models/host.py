@@ -27,15 +27,24 @@ class Host(Document):
         return host
 
     @classmethod
-    async def get_multi(cls, lenght=80):
+    async def get_multi(cls, lenght: int = 80):
         cursor = cls.find()
         hosts = []
         for host in await cursor.to_list(length=80):
             hosts.append(host.dump())
         return hosts
+    
+    @classmethod
+    async def search(cls, hostname: str, limit: int = 5):
+        """ cursor = cls.find({ '$text': { '$search': hostname } }) """
+        cursor = cls.find({'hostname': {'$regex': hostname }})
+        hosts = []
+        for host in await cursor.to_list(length=limit):
+            hosts.append(host.dump())
+        return hosts
 
     @classmethod
-    async def create(cls, data):
+    async def create(cls, data: dict):
         host = cls(**data)
         await host.commit()
         return host
@@ -49,6 +58,6 @@ class Host(Document):
         _logger.info(host)
     
     @classmethod
-    async def delete(cls, _id):
+    async def delete(cls, _id: str):
         host = await cls.get(_id)
         await host.remove()

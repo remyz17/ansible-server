@@ -36,6 +36,12 @@ async def get(host_id: str):
     return host
 
 
+@router.get("/search")
+async def search(hostname: str, limit: int = 5):
+    hosts = await Host.search(hostname, limit)
+    return hosts
+
+
 @router.post("/create", status_code=status.HTTP_201_CREATED)
 async def create(data: host_serialize.HostCreate):
     host = await Host.create(data.dict(exclude_unset=True))

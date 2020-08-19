@@ -20,6 +20,7 @@ class Group(Document):
     parent_id = fields.ReferenceField('Group')
     groupvars = fields.ListField(fields.EmbeddedField(GroupVar))
 
+
     @classmethod
     async def get(cls, _id: str):
         if not ObjectId.is_valid(_id):
@@ -33,6 +34,14 @@ class Group(Document):
         cursor = cls.find()
         groups = []
         for group in await cursor.to_list(length=80):
+            groups.append(group.dump())
+        return groups
+    
+    @classmethod
+    async def search(cls, name: str, limit: int = 5):
+        cursor = cls.find({'name': { '$regex': name }})
+        groups = []
+        for group in await cursor.to_list(length=limit):
             groups.append(group.dump())
         return groups
 
