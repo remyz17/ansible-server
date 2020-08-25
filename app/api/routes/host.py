@@ -37,8 +37,8 @@ async def get(host_id: str):
 
 
 @router.get("/search")
-async def search(hostname: str, limit: int = 5):
-    hosts = await Host.search(hostname, limit)
+async def search(name: str, limit: int = 5):
+    hosts = await Host.search(name, limit)
     return hosts
 
 
