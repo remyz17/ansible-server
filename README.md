@@ -1,15 +1,17 @@
 # ansible-server
 
-Setup instruction
+A lightweight web interface for Ansible
 
-## Front-end
+## Setup
+
 ```
-cd ansible-web
-npm install && npm run build
+pip3 install uvicorn fastapi aiofiles umongo
 ```
-  
-## Back-end
+
+## Running
+
+For now i use Uvicorn to serve the ASGI app, but will probably switch to Hypercorn as it's support H3/QUIC protocols
+
 ```
-pip3 install uvicorn fastapi
 python3 run.py
 ```
