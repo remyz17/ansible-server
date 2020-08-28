@@ -8,6 +8,12 @@ from app.api.models.group import Group
 router = APIRouter()
 
 
+@router.get("/count", status_code=status.HTTP_200_OK)
+async def count_docs():
+    count = await Host.count_documents()
+    return count
+
+
 @router.get("/get_multi", status_code=status.HTTP_200_OK)
 async def get_multi():
     hosts = await Host.get_multi()
@@ -20,11 +26,7 @@ async def get_multi():
     return hosts
 
 
-@router.get(
-    "/get/{host_id}",
-    # response_model=host_serialize.HostGetResponse,
-    status_code=status.HTTP_200_OK,
-)
+@router.get("/get/{host_id}", status_code=status.HTTP_200_OK)
 async def get(host_id: str):
     host = await Host.get(host_id)
     host = host.dump()
@@ -36,7 +38,7 @@ async def get(host_id: str):
     return host
 
 
-@router.get("/search")
+@router.get("/search", status_code=status.HTTP_200_OK)
 async def search(name: str, limit: int = 5):
     hosts = await Host.search(name, limit)
     return hosts
@@ -48,13 +50,13 @@ async def create(data: host_serialize.HostCreate):
     return host.dump()
 
 
-@router.put("/update/{host_id}")
+@router.put("/update/{host_id}", status_code=status.HTTP_200_OK)
 async def update(host_id: str, data: host_serialize.HostUpdate):
     host = await Host.update_data(host_id, data.dict(exclude_unset=True))
     _logger.info(host)
     return host
 
 
-@router.delete("/delete/{host_id}")
+@router.delete("/delete/{host_id}", status_code=status.HTTP_204_NO_CONTENT)
 async def delete(host_id: str):
     await Host.delete(host_id)
