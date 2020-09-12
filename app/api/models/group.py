@@ -17,16 +17,15 @@ class GroupVar(EmbeddedDocument):
 @instance.register
 class Group(Document):
     name = fields.StrField(required=True, unique=True)
-    parent_id = fields.ReferenceField('Group')
+    parent_id = fields.ReferenceField("Group")
     groupvars = fields.ListField(fields.EmbeddedField(GroupVar))
-
 
     @classmethod
     async def get(cls, _id: str):
         if not ObjectId.is_valid(_id):
             return None
 
-        group = await cls.find_one({'_id': ObjectId(_id)})
+        group = await cls.find_one({"_id": ObjectId(_id)})
         return group
 
     @classmethod
@@ -36,10 +35,10 @@ class Group(Document):
         for group in await cursor.to_list(length=80):
             groups.append(group.dump())
         return groups
-    
+
     @classmethod
     async def search(cls, name: str, limit: int = 5):
-        cursor = cls.find({'name': { '$regex': name }})
+        cursor = cls.find({"name": {"$regex": name}})
         groups = []
         for group in await cursor.to_list(length=limit):
             groups.append(group.dump())
@@ -53,12 +52,9 @@ class Group(Document):
 
     @classmethod
     async def update_data(cls, _id, data):
-        group = await cls.collection.update_one(
-            {'_id': ObjectId(_id)},
-            {'$set': data}
-        )
+        group = await cls.collection.replace_one({"_id": ObjectId(_id)}, data)
         _logger.info(group)
-    
+
     @classmethod
     async def delete(cls, _id):
         group = await cls.get(_id)
