@@ -1,24 +1,18 @@
 import logging
-from logging import log
 from bson import ObjectId
-from umongo import Document, EmbeddedDocument, fields
+from umongo import Document, fields
 
-from app.db import instance, db
+from app.db import instance
+from app.api.models.inventory import Variable
 
 _logger = logging.getLogger(__name__)
-
-
-@instance.register
-class GroupVar(EmbeddedDocument):
-    key = fields.StrField()
-    value = fields.StrField()
 
 
 @instance.register
 class Group(Document):
     name = fields.StrField(required=True, unique=True)
     parent_id = fields.ReferenceField("Group")
-    groupvars = fields.ListField(fields.EmbeddedField(GroupVar))
+    variables = fields.ListField(fields.EmbeddedField(Variable))
 
     @classmethod
     async def get(cls, _id: str):

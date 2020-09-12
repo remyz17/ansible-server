@@ -24,7 +24,7 @@ class HostGetResponse(BaseModel):
     _id: str
     hostname: str
     group_id: Optional[str]
-    hostvars: Optional[List[HostVar]]
+    variables: Optional[List[HostVar]]
 
 
 class HostGetMulti(HostBase):
@@ -34,10 +34,10 @@ class HostGetMulti(HostBase):
 class HostCreate(HostBase):
     hostname: str
     group_id: Optional[str]
-    hostvars: List[HostVar] = []
+    variables: List[HostVar] = []
 
 
 class HostUpdate(HostBase):
     hostname: Optional[str]
     group_id: Optional[str]
-    hostvars: List[HostVar] = []
+    variables: List[HostVar] = []

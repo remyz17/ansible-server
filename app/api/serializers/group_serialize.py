@@ -22,10 +22,10 @@ class GroupVar(BaseModel):
 class GroupCreate(GroupBase):
     name: str
     parent_id: Optional[str]
-    groupvars: List[GroupVar] = []
+    variables: List[GroupVar] = []
 
 
 class GroupUpdate(GroupBase):
     name: Optional[str]
     parent_id: Optional[str]
-    groupvars: List[GroupVar] = []
+    variables: List[GroupVar] = []

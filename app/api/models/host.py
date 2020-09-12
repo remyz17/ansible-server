@@ -1,22 +1,17 @@
 from bson import ObjectId
-from umongo import Document, EmbeddedDocument, fields
+from umongo import Document, fields
 
 from app.core.logger import _logger
-from app.db import instance, db
+from app.db import instance
 from app.api.models.group import Group
-
-
-@instance.register
-class HostVar(EmbeddedDocument):
-    key = fields.StrField()
-    value = fields.StrField()
+from app.api.models.inventory import Variable
 
 
 @instance.register
 class Host(Document):
     hostname = fields.StrField(required=True, unique=True)
     group_id = fields.ReferenceField(Group)
-    hostvars = fields.ListField(fields.EmbeddedField(HostVar))
+    variables = fields.ListField(fields.EmbeddedField(Variable))
 
     @classmethod
     async def get(cls, _id: str):
