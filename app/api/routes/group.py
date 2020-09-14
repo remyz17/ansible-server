@@ -18,10 +18,10 @@ async def get_multi():
     groups = await Group.get_multi()
     for group in groups:
         parent = None
-        if "parent_id" in group.keys():
-            parent = await Group.get(group["parent_id"])
+        if "group_id" in group.keys():
+            parent = await Group.get(group["group_id"])
         if parent:
-            group["parent"] = parent.dump()
+            group["group"] = parent.dump()
     return groups
 
 
@@ -30,10 +30,10 @@ async def get(group_id: str):
     group = await Group.get(group_id)
     group = group.dump()
     parent = None
-    if "parent_id" in group.keys():
-        parent = await Group.get(group["parent_id"])
+    if "group_id" in group.keys():
+        parent = await Group.get(group["group_id"])
     if parent:
-        group["parent"] = parent.dump()
+        group["group"] = parent.dump()
     return group
 
 

@@ -11,7 +11,7 @@ _logger = logging.getLogger(__name__)
 @instance.register
 class Group(Document):
     name = fields.StrField(required=True, unique=True)
-    parent_id = fields.ReferenceField("Group")
+    group_id = fields.ReferenceField("Group")
     variables = fields.ListField(fields.EmbeddedField(Variable))
 
     @classmethod
